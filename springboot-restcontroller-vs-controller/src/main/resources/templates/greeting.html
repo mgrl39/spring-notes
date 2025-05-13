@@ -1,0 +1,24 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http::www.thymeleaf.org">
+<head>
+    <title>Getting Started: Serving Web Content</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+    <form method="get" action="/greeting">
+        <input type="text" name="name" placeholder="name" />
+        <input type="submit">
+    </form>
+    <p th:text="|Hello, ${msgs}!|"/>
+
+    <!--
+    Afegir el mateix formulari a greeting.html apuntant-se a ell mateix
+    per visualitzar el text a la mateixa pàgina
+    -->
+    <table border="2">
+        <tr th:each="el: ${msgs}">
+            <td th:text="${el}"></td>
+        </tr>
+    </table>
+</body>
+</html>
