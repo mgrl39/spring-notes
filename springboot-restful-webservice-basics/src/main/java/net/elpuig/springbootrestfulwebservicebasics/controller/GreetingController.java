@@ -48,7 +48,8 @@ public class GreetingController {
         // Crea i retorna un nou objecte Greeting amb:
         // 1. Un ID únic generat incrementant el comptador (counter.incrementAndGet())
         // 2. Un missatge formatat substituint %s pel nom rebut (String.format(template, name))
-        // Spring convertirà automàticament aquest objecte a JSON gràcies a Jackson
+        // Spring
+        // convertirà automàticament aquest objecte a JSON gràcies a Jackson
         return new Greeting(counter.incrementAndGet(), String.format(template, name));
     }
     // http://localhost:8080/greeting?name=Mouad
