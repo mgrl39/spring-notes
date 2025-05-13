@@ -20,3 +20,5 @@
 | Es podria retornar una referència o recurs |                                  | Es podria retornar el recurs    | Es podria retornar el recurs         |                                            |
 
 ![metodes](metodes.png)
+
+[Començar la primera sessió](/springboot-crud-intro)
