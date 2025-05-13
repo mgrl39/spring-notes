@@ -15,8 +15,8 @@ public class SpringbootCrudIntroApplication {
     }
 
 // https://spring.io/quickstart
-/* http://localhost:8080/hello?name=xd */
-@GetMapping("/hello")
+/* http://localhost:8080/hello-antic?name=xd */
+@GetMapping("/hello-antic")
 public String hello(@RequestParam(value = "name", defaultValue = "Món") String name) {
     String missatge = String.format("Hola %s!", name);
 
@@ -24,9 +24,10 @@ public String hello(@RequestParam(value = "name", defaultValue = "Món") String 
         El mètode hello() que hem afegit està dissenyat per rebre un paràmetre de tipus String anomenat name,<br>
         i després combinar aquest paràmetre amb la paraula "Hola" dins del codi.<br><br>
         L’anotació @RestController indica a Spring que aquest codi descriu un endpoint web.<br><br>
-        L’anotació @GetMapping("/hello") vincula el mètode a l'adreça http://localhost:8080/hello<br><br>
+        L’anotació @GetMapping("/hello-antic") vincula el mètode a l'adreça http://localhost:8080/hello-antic<br><br>
         Finalment, @RequestParam recull el valor "name" i usa "Món" si no es passa cap valor.
         """;
     return "<p>" + missatge + "</p><p>" + comentari + "</p>";
 }
+
 }
