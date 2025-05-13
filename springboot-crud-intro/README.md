@@ -4,8 +4,9 @@ Aquest projecte és una introducció a Spring Boot, seguint el [Quickstart ofici
 
 ## 🧩 Estructura del projecte
 
-Aquest projecte ha estat creat a partir de **start.spring.io**, afegint la dependència `Spring Web`.
-El projecte genera automàticament una aplicació bàsica amb una classe principal (`main`) i un exemple de controladora REST.
+Aquest projecte ha estat creat a partir de [start.spring.io](https://start.spring.io), afegint la dependència `Spring Web`.
+
+Això ens genera una estructura bàsica per poder crear aplicacions web amb Spring Boot de forma ràpida.
 
 ---
 
@@ -13,13 +14,10 @@ El projecte genera automàticament una aplicació bàsica amb una classe princip
 
 ### ✔️ Seguir el Quickstart, executar i entendre l’exemple
 
-1. S’ha creat el projecte des de start.spring.io amb la dependència web.
-2. S’ha obert amb un IDE i modificat el fitxer `SpringbootCrudIntroApplication.java`.
-3. S’ha afegit un endpoint `/hello-antic`.
-4. S’ha executat correctament accedint a: [http://localhost:8080/hello-antic](http://localhost:8080/hello-antic)
+S'ha seguit el tutorial oficial i s'ha afegit un primer endpoint dins de la classe principal.
 
 <details>
-<summary>🔍 Codi amb explicació detallada</summary>
+<summary>🔍 Exemple de codi original amb explicació pas a pas</summary>
 
 ```java
 @SpringBootApplication
@@ -33,17 +31,26 @@ public class SpringbootCrudIntroApplication {
     @GetMapping("/hello-antic")
     public String hello(@RequestParam(value = "name", defaultValue = "Món") String name) {
         String missatge = String.format("Hola %s!", name);
-        return "<p>" + missatge + "</p>";
+
+        String comentari = """
+        El mètode hello() que hem afegit està dissenyat per rebre un paràmetre de tipus String anomenat name,<br>
+        i després combinar aquest paràmetre amb la paraula "Hola" dins del codi.<br><br>
+        L’anotació @RestController indica a Spring que aquest codi descriu un endpoint web.<br><br>
+        L’anotació @GetMapping("/hello-antic") vincula el mètode a l'adreça http://localhost:8080/hello-antic<br><br>
+        Finalment, @RequestParam recull el valor "name" i usa "Món" si no es passa cap valor.
+        """;
+
+        return "<p>" + missatge + "</p><p>" + comentari + "</p>";
     }
 }
 ```
 
-### Explicacions:
+### Explicació detallada d’anotacions i elements:
 
-* `@SpringBootApplication`: Anotació principal que configura tota l’aplicació.
-* `@RestController`: Indica que aquesta classe és un controlador REST. Tots els mètodes amb `@GetMapping` retornaran dades per HTTP.
-* `@GetMapping("/hello-antic")`: Associa el mètode amb el path `/hello-antic`.
-* `@RequestParam(...)`: Permet rebre paràmetres de la URL, per exemple: `/hello-antic?name=Joan`.
+* `@SpringBootApplication`: configura automàticament Spring Boot, escaneja components i arrenca l’aplicació.
+* `@RestController`: indica que la classe conté mètodes que respondran a peticions HTTP. A diferència d’un `@Controller`, no retorna una pàgina HTML, sinó dades (en aquest cas, text o JSON).
+* `@GetMapping("/hello-antic")`: associa aquest mètode amb l’URL `/hello-antic`.
+* `@RequestParam`: recull els paràmetres que venen per la URL. Per exemple: `?name=Joan`. Si no arriba cap valor, agafa el valor per defecte `"Món"`.
 
 </details>
 
@@ -51,9 +58,9 @@ public class SpringbootCrudIntroApplication {
 
 ## ✔️ Tasques extres
 
-### ✅ Treure l'endpoint de la classe principal (`main`) i crear una classe `RestController` separada
+### ✅ Treure l'endpoint de la classe principal i crear una classe `RestController` separada
 
-S’ha creat una nova classe `HelloResource.java` per contenir els endpoints.
+Aquesta és una bona pràctica: separar la configuració (`main`) de la lògica dels endpoints web.
 
 <details>
 <summary>📄 HelloResource.java</summary>
@@ -84,15 +91,30 @@ public class HelloResource {
 
 </details>
 
-### ✅ Usar una constant per definir l'endpoint principal
+### Explicació detallada:
 
-A la línia `public static final String HELLO_RESOURCE = "/hello"`, es defineix una constant reutilitzable per mantenir el codi net i evitable errors.
+<details>
+<summary>ℹ️ Explicació d'anotacions</summary>
+
+* `@RestController`: igual que abans, indica que aquesta classe gestionarà peticions HTTP i respondrà amb dades.
+* `@RequestMapping(HELLO_RESOURCE)`: defineix una ruta base per a tots els mètodes. En aquest cas, tots començaran amb `/hello`.
+* `@GetMapping()`: com que no té cap valor, aquest mètode respon a `/hello`.
+* `@GetMapping("bye")`: respondrà a `/hello/bye`.
+* `@RequestParam(...)`: com abans, recull el valor de la URL. Exemple: `/hello/bye?name=Maria` -> `"Adeu Maria!"`
+
+</details>
+
+---
+
+### ✅ Usar una constant per definir el path principal
+
+Definim `HELLO_RESOURCE` com a constant per reutilitzar-la i evitar errors per escriure la ruta manualment diverses vegades.
 
 ---
 
 ### ✅ Afegir un `index.html`
 
-Aquest fitxer es troba dins de `src/main/resources/static`. Quan es visita `http://localhost:8080/`, es mostra automàticament.
+Quan el servidor s’aixeca, Spring Boot detecta automàticament el fitxer `index.html` a `src/main/resources/static`.
 
 <details>
 <summary>📄 index.html</summary>
@@ -118,13 +140,11 @@ Aquest fitxer es troba dins de `src/main/resources/static`. Quan es visita `http
 
 </details>
 
-El formulari fa una petició `GET` al servidor amb el nom escrit, que és recollit pel paràmetre `name`.
+Quan s’omple el formulari i es prem "Enviar", el navegador fa una petició GET a `/hello?name=ElNom`, i es rep una resposta en format JSON.
 
 ---
 
-### ✅ Crear un formulari HTML que interactua amb `/hello`
-
-Quan l’usuari introdueix un nom i envia el formulari, el backend respon amb un JSON com aquest:
+### ✅ Formulari HTML que crida l’endpoint `/hello`
 
 ```json
 {
@@ -133,11 +153,13 @@ Quan l’usuari introdueix un nom i envia el formulari, el backend respon amb un
 }
 ```
 
+El navegador mostra la resposta crua, però si s’utilitza una eina com Postman o el navegador amb una extensió JSON, es veu formatat.
+
 ---
 
 ## 🧱 Classe `Hello.java`
 
-Aquesta classe és un **POJO** (Plain Old Java Object), que serveix com a model per a les respostes JSON del servidor.
+És una classe senzilla amb dos camps (`id` i `message`) i mètodes `get` i `set`.
 
 <details>
 <summary>📄 Hello.java</summary>
@@ -161,11 +183,13 @@ public class Hello {
 
 </details>
 
+Quan es retorna aquest objecte des d’un endpoint, Spring Boot converteix-lo automàticament a **JSON**.
+
 ---
 
 ## ⚙️ Fitxer `application.properties`
 
-Aquest fitxer permet configurar variables per a l’aplicació, com el nom o el port.
+Aquest fitxer serveix per configurar l’aplicació de forma senzilla. Per exemple:
 
 <details>
 <summary>📄 application.properties</summary>
@@ -173,45 +197,78 @@ Aquest fitxer permet configurar variables per a l’aplicació, com el nom o el 
 ```properties
 spring.application.name=springboot-crud-intro
 welcome-value=Benvingut
-# server.port=8082 (si vols canviar el port)
+# server.port=8082 (es pot descomentar per canviar el port)
 ```
 
-També es pot fer servir un fitxer `application.yml` per a configuracions més complexes.
+També es pot fer servir el fitxer `application.yml` en format YAML.
 
 </details>
 
 ---
 
-## 📌 Conceptes explicats
+## 📌 Resum de Conceptes Clau
 
 <details>
-<summary>ℹ️ @RestController</summary>
-Indica que la classe conté mètodes que gestionen peticions HTTP i les respostes van directament al navegador o aplicació client (no una vista HTML). Retorna dades (com JSON), no pàgines.
+<summary>🧠 @RestController (explicació ampliada)</summary>
+
+`@RestController` és una combinació de dues anotacions:
+
+* `@Controller`: indica que és una classe que pot gestionar peticions HTTP.
+* `@ResponseBody`: fa que el resultat del mètode es retorni directament com a resposta HTTP (no com una vista HTML).
+
+Per tant, serveix per **fer APIs REST** que treballen amb dades (JSON, XML...).
 
 </details>
 
 <details>
-<summary>ℹ️ @RequestParam</summary>
-Permet obtenir valors des de la URL. Per exemple:  
-`/hello?name=Joan`  
-Això fa que `name = "Joan"` dins del mètode.
+<summary>🧠 @GetMapping (explicació ampliada)</summary>
 
-També es pot afegir `defaultValue`, per si no es passa cap paràmetre.
+És una forma ràpida d’especificar que un mètode respon a **peticions GET**. GET és el tipus de petició que fa el navegador normalment quan accedim a una URL.
 
-</details>
+```java
+@GetMapping("/hola")
+public String hola() {
+    return "Hola món!";
+}
+```
 
-<details>
-<summary>ℹ️ @GetMapping</summary>
-Defineix un mètode que respon a peticions HTTP de tipus GET (com quan accedim a una URL al navegador).  
-Per exemple:  
-`@GetMapping("/hello")` fa que el mètode respongui a `/hello`.
+Això respondrà quan entrem a `http://localhost:8080/hola`.
 
 </details>
 
 <details>
-<summary>ℹ️ Spring Boot i start.spring.io</summary>
-Spring Boot és un framework per crear aplicacions Java molt ràpidament, amb configuració mínima.
+<summary>🧠 @RequestParam (explicació ampliada)</summary>
 
-[start.spring.io](https://start.spring.io/) és una eina web que permet generar plantilles de projectes de forma ràpida.
+`@RequestParam` s’utilitza per accedir als paràmetres passats per la URL:
+
+```java
+@GetMapping("/hello")
+public String hello(@RequestParam String name) {
+    return "Hola " + name;
+}
+```
+
+Si accedim a `/hello?name=Joan`, es mostrarà `"Hola Joan"`.
+
+També es pot afegir un valor per defecte:
+
+```java
+@RequestParam(value = "name", defaultValue = "Món")
+```
 
 </details>
+
+<details>
+<summary>🧠 POJO (Plain Old Java Object)</summary>
+
+Un POJO és una classe senzilla de Java amb atributs i mètodes getters/setters. En Spring, sovint s’utilitza per representar objectes que es retornen en format JSON.
+
+</details>
+
+---
+
+## ✅ Conclusió
+
+* ✔️ S’ha completat tota la pràctica, incloent les tasques extres.
+* ✔️ S’ha seguit una estructura clara i modular.
+* ✔️ Tots els conceptes s’han explicat detalladament per a que qualsevol persona, encara que no conegui Spring Boot, pugui entendre què fa cada part del projecte.
