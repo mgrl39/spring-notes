@@ -205,6 +205,57 @@ Però la pràctica recomana usar `@Service`, ja que encapsula millor la lògica 
 
 ---
 
+### 🔍 Aprofundiment: @Bean vs @Service i Singleton
+
+Durant la pràctica es va introduir inicialment una idea: injectar una llista de missatges com a `@Bean` dins de la classe principal. Aquesta estratègia pot funcionar per a petits experiments, però no és recomanable a nivell professional.
+
+<details>
+<summary>🛠 Exemple de Bean amb una llista singleton</summary>
+
+```java
+@Bean
+public List<String> getMessages() {
+    return new ArrayList<>();
+}
+```
+
+Aquest mètode defineix un *component Spring* (un bean) que retorna un `ArrayList`. Quan Spring Boot arrenqui, detectarà aquest mètode gràcies a `@Bean`, i en crearà una instància única que podrà ser injectada en altres llocs via `@Autowired`.
+
+Això significa que si fem:
+
+```java
+@Autowired
+List<String> messages;
+```
+
+...Spring injectarà el mateix `ArrayList` definit anteriorment. Com que només hi ha un `@Bean` que retorna una `List<String>`, Spring ja sap quin utilitzar.
+
+</details>
+
+Tot i això, la pràctica ens mostra que una millor arquitectura és encapsular aquesta lògica dins d’un servei:
+
+### 💡 Per què fer servir `@Service` en lloc de `@Bean`
+
+* Amb `@Service`, podem afegir mètodes i encapsular millor la lògica del negoci.
+* L’estructura és més neta i fàcil d’escalar (afegint base de dades, validacions, etc.).
+* Encara mantenim la idea de singleton: només hi ha una instància del `GreetingService` per tot l’entorn Spring.
+
+### 🧠 Què és un Singleton?
+
+El patró **singleton** assegura que només hi hagi una única instància d’una classe dins del context d'execució. Spring crea automàticament tots els seus components (`@Component`, `@Service`, `@Repository`, `@Controller`, `@Bean`...) com a singletons per defecte.
+
+> Això vol dir que cada vegada que injectem `GreetingService`, estem treballant amb la **mateixa instància compartida**, amb la mateixa llista de missatges.
+
+### 🧱 Bones pràctiques d’injecció
+
+* Inicialment es pot injectar una llista com a `@Bean`, però aquesta tècnica no escala bé.
+* Es recomana crear serveis (`@Service`) amb lògica ben encapsulada.
+* Si hi hagués més d’un `@Bean` que retorna `List<String>`, caldria especificar quin volem mitjançant `@Qualifier`.
+
+Aquest enfocament modular i clar és el que ens permet mantenir aplicacions robustes, mantenibles i extensibles.
+
+---
+
 ## ✅ Conclusions
 
 ✔️ S’ha aplicat correctament l’estructura MVC típica de Spring Boot.
