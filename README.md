@@ -1,6 +1,5 @@
 # spring-notes
-## Què és Spring i què podem fer?
-### SESSIÓ 1. Introducció
+## SESSIÓ 1. Introducció
 
 1. Què és Spring i què podem fer?
 - **Spring** és un framework lleuger de codi obert creat per Rob Jhonson per facilitar el desenvolupament d'aplicacions modernes (Microserveis, Programació reactiva, Cloud, Web Apps etc.) sobre Java o Kotlin.
