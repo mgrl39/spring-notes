@@ -10,9 +10,6 @@ public class QuoteService {
     RestTemplate restTemplate = new RestTemplate();
 
     public Quote getQuote() {
-        String url = "https://api.chucknorris.io/jokes/random";
-
-        Quote response = restTemplate.getForObject(url, Quote.class);
-        return response;
+        return restTemplate.getForObject("https://api.chucknorris.io/jokes/random", Quote.class);
     }
 }
