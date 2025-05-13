@@ -1,46 +1,42 @@
-# Spring Boot Web Content - Sessio 2: Controller vs RestController
+# Spring Boot Web Content - Sessió 2: Controller vs RestController
 
-Aquest projecte desenvolupa una aplicació web amb Spring Boot centrada en l’ús del patró Model-View-Controller (“MVC”). A diferència de la sessió anterior on usàvem `@RestController` per retornar JSON, en aquesta sessió hem treballat amb `@Controller` per retornar vistes HTML mitjançant el motor de plantilles Thymeleaf.
-
----
-
-## 🧩 Objectiu del projecte
-
-Aquest projecte té com a objectiu entendre i aplicar la diferència entre `@RestController` i `@Controller`, aprenent a:
-
-* Implementar un servidor web amb `@Controller`
-* Mostrar vistes HTML dinàmiques amb **Thymeleaf**
-* Passar dades des del backend al frontend via `Model`
-* Injectar dades amb `@Autowired`, `@Value` i separar lògica amb `@Service`
-
-A més, segueix i amplia el tutorial oficial de Spring: [Serving Web Content](https://spring.io/guides/gs/serving-web-content).
+Aquest projecte aprofundeix en la construcció d’una aplicació web utilitzant **Spring Boot amb Spring MVC**, fent una comparativa pràctica entre `@RestController` i `@Controller`. A diferència de la primera sessió (on s'utilitzava `@RestController` per retornar JSON), ara implementem un **servidor web real** amb retorn de vistes HTML mitjançant **Thymeleaf**.
 
 ---
 
-## 🪡 Estructura del projecte
+## 🎯 Objectiu del projecte
 
-El projecte s’ha generat amb [Spring Initializr](https://start.spring.io) amb les següents dependències:
+Desenvolupar una aplicació que:
 
-* `Spring Web`
-* `Thymeleaf`
-* `Spring Boot DevTools`
+* Tingui una pàgina inicial (`index.html`) amb un formulari.
+* Permeti enviar dades a través d’un formulari cap a un endpoint `/greeting`.
+* Mostri totes les paraules rebudes en una taula HTML.
+* Separi responsabilitats en capes (`Controller`, `Service`), utilitzant bones pràctiques.
 
-Aquestes eines ens han permès crear una aplicació amb suport per vistes HTML, auto recàrrega i estructura modular.
+> Seguint el tutorial oficial de Spring: [Serving Web Content](https://spring.io/guides/gs/serving-web-content), però ampliant-lo amb lògica pròpia i components típics d’una aplicació real.
 
 ---
 
-## 📉 Requisits i tasques completades
+## 🧩 Estructura i dependències
 
-### ✅ Seguir el guia oficial i adaptar-lo
+Aquest projecte s’ha generat amb [start.spring.io](https://start.spring.io) amb les dependències següents:
 
-S’ha seguit el tutorial oficial `Serving Web Content`, però s’ha adaptat i millorat amb funcionalitats extra, com:
+* **Spring Web**: per poder crear controladors HTTP.
+* **Thymeleaf**: per generar vistes HTML des del servidor.
+* **Spring Boot DevTools**: per permetre el *live reload* automàtic quan es fan canvis.
 
-* Afegir un servei per guardar paraules entrades
-* Mostrar totes les paraules a la mateixa pàgina
-* Formularis en diverses vistes que apunten al mateix endpoint
+Spring Boot DevTools permet:
 
-<details>
-<summary>🔍 Codi base adaptat amb explicació</summary>
+* Hot reloading (reinici automàtic de l’app quan hi ha canvis).
+* Desactivació de la memòria cau de plantilles (important per veure els canvis de Thymeleaf a temps real).
+
+---
+
+## 📌 Implementació pas a pas
+
+### ✅ 1. Crear el controlador amb `@Controller`
+
+El controlador gestiona les peticions entrants. En aquest cas, el `GreetingController` és el punt d’entrada per a `/greeting`.
 
 ```java
 @Controller
@@ -56,40 +52,32 @@ public class GreetingController {
 
     @GetMapping
     public String greeting(@RequestParam(name="name", required=false, defaultValue="World") String name, Model model) {
-        service.addWord(name);
-        model.addAttribute("msgs", service.getAllMessages());
-        return "greeting";
+        System.out.println(wel); // Mostra el missatge configurat via @Value
+        service.addWord(name); // Afegeix el nom a la llista
+        model.addAttribute("msgs", service.getAllMessages()); // Afegeix la llista al model per ser usada a la vista
+        return "greeting"; // Retorna la vista greeting.html
     }
 }
 ```
 
-</details>
-
----
-
-### ✅ Canviar l'ús de `@RestController` per `@Controller`
-
-A diferència de la sessió 1, aquesta vegada la resposta és una **vista HTML**. L’objectiu era construir una web real, no una API JSON.
-
 <details>
-<summary>ℹ️ Explicació detallada de les anotacions</summary>
+<summary>ℹ️ Explicació detallada de conceptes clau</summary>
 
-* `@Controller`: Permet retornar el nom d’una plantilla HTML (no JSON)
-* `@RequestMapping(...)`: Defineix el path base per als mètodes d’aquesta classe
-* `@Value(...)`: Permet accedir a valors definits a `application.properties`
-* `@Autowired`: Injecció automàtica d’una dependència
-* `Model`: Objecte que permet passar dades del controlador a la vista
+* `@Controller`: Anotació que marca una classe com a controlador que retorna vistes HTML.
+* `@RequestMapping(...)`: Defineix la ruta base per tots els mètodes del controlador.
+* `@GetMapping(...)`: Indica que aquest mètode respon a peticions GET.
+* `@RequestParam(...)`: Captura paràmetres de la URL (ex: `/greeting?name=Joan`).
+* `@Value(...)`: Injecta valors definits al fitxer `application.properties`. Exemple: `@Value("${welcome-text}")` injecta "Benvingut!".
+* `@Autowired`: Fa que Spring injecti automàticament una instància del `GreetingService` (no cal fer `new`).
+* `Model`: Permet passar dades des del backend cap a la vista. `addAttribute("msgs", ...)` afegeix l'atribut `msgs` perquè sigui accessible des de Thymeleaf.
 
 </details>
 
 ---
 
-### ✅ Crear un servei amb `@Service` per gestionar l’estat
+### ✅ 2. Crear el servei amb `@Service`
 
-Anteriorment es proposava fer un `@Bean` per retornar una llista. En aquest exercici es millora aquesta pràctica creant una classe `GreetingService`, marcada com a singleton amb `@Service`.
-
-<details>
-<summary>📄 GreetingService.java</summary>
+La lògica d’emmagatzemar les paraules s’abstrau dins d’un servei.
 
 ```java
 @Service
@@ -106,24 +94,28 @@ public class GreetingService {
 }
 ```
 
-</details>
+<details>
+<summary>📘 Què és un `@Service` i un Singleton?</summary>
 
-Aquesta classe s’encarrega d’emmagatzemar les paraules rebudes. Al ser singleton, sempre treballa amb la mateixa instància.
+* `@Service` indica que aquesta classe forma part de la lògica del negoci (business logic).
+* Spring crea una **única instància** d’aquesta classe (patró *Singleton*) i la reutilitza allà on es necessiti.
+* Això permet que la llista `messages` es mantingui durant tota l’execució del servidor.
+
+</details>
 
 ---
 
-### ✅ Crear vistes HTML amb Thymeleaf
+### ✅ 3. Crear vistes HTML amb Thymeleaf
 
-S’han creat dues vistes: `index.html` (pàgina inicial) i `greeting.html` (pàgina amb taula dinàmica).
-
-<details>
-<summary>📄 greeting.html</summary>
+#### greeting.html
 
 ```html
 <form method="get" action="/greeting">
     <input type="text" name="name" placeholder="name" />
     <input type="submit">
 </form>
+
+<p th:text="|Hello, ${msgs}!|" />
 
 <table border="2">
     <tr th:each="el: ${msgs}">
@@ -132,64 +124,92 @@ S’han creat dues vistes: `index.html` (pàgina inicial) i `greeting.html` (pà
 </table>
 ```
 
+<details>
+<summary>📘 Explicació de Thymeleaf</summary>
+
+* `th:each="el: ${msgs}"`: fa un bucle per cada element de la llista `msgs`.
+* `th:text="${el}"`: mostra el contingut de cada paraula en una cel·la HTML.
+* Permet integrar dades del backend directament en la vista.
+
 </details>
 
-Utilitzem:
+#### index.html
 
-* `th:each` per iterar sobre la llista de missatges
-* `th:text` per mostrar cada valor en una cel·la
+Una pàgina HTML bàsica a `resources/static/index.html` que actua com a entrada de l’aplicació:
 
-Aquesta pàgina es mostra cada vegada que afegim un nom nou a la URL o al formulari.
+```html
+<form method="get" action="/greeting">
+    <input type="text" name="name" placeholder="name" />
+    <input type="submit">
+</form>
+```
+
+Quan es fa submit, redirigeix a `/greeting?name=...`, afegint el nom a la llista.
 
 ---
 
-### ✅ Formulari també a `index.html`
+### ✅ 4. Injectar valors de configuració amb `@Value`
 
-Spring Boot detecta automàticament `static/index.html` com a pàgina inicial. Aquest fitxer conté un formulari que envia dades a `/greeting`.
-
----
-
-### ✅ Injectar paràmetres de `application.properties`
-
-<details>
-<summary>📄 application.properties</summary>
+A `application.properties`:
 
 ```properties
 spring.application.name=springboot-restcontroller-vs-controller
 welcome-text=Benvingut!
 ```
 
-</details>
+Aquest valor es pot mostrar o utilitzar dins del controlador:
 
-Amb `@Value("${welcome-text}")` es pot accedir a aquest text des del controlador.
+```java
+@Value("${welcome-text}")
+String wel;
+```
+
+Això permet fer **configuració externa** sense modificar el codi font.
+
+---
+
+### ✅ 5. @Bean vs @Service
+
+Inicialment es podia crear una instància compartida de la llista amb un `@Bean`:
+
+```java
+@Bean
+public List<String> getMessages() {
+    return new ArrayList<>();
+}
+```
+
+Però la pràctica recomana usar `@Service`, ja que encapsula millor la lògica i segueix el patró d’arquitectura típic MVC (Model - View - Controller).
 
 ---
 
 ## 📊 Comparativa Controller vs RestController
 
-| Característica | @Controller                | @RestController                  |
-| -------------- | -------------------------- | -------------------------------- |
-| Retorna        | Nom de vista (HTML)        | Objecte Java (convertit a JSON)  |
-| Frontend       | Amb Thymeleaf              | Sense vista, es mostra com a API |
-| Adequat per... | Web tradicional amb vistes | APIs REST per serveis externs    |
+| Característica       | @Controller                  | @RestController            |
+| -------------------- | ---------------------------- | -------------------------- |
+| Tipus de retorn      | Vista (HTML)                 | JSON o altres dades        |
+| Ús habitual          | Aplicacions web              | APIs REST                  |
+| Necessita plantilla? | Sí (Thymeleaf, JSP, etc.)    | No                         |
+| Exemple de retorn    | "greeting" (nom d'una vista) | new Hello("Món") (objecte) |
 
 ---
 
-## 🔄 Flux del funcionament
+## 🔁 Flux complet de funcionament
 
-1. L’usuari accedeix a `/` i omple el formulari amb un nom
-2. El navegador envia la petició GET a `/greeting?name=ElNom`
-3. El controlador afegeix el nom a la llista (via `GreetingService`)
-4. Passa la llista al `Model`
-5. Thymeleaf genera una taula HTML amb tots els noms
+1. L’usuari accedeix a `/` i introdueix un nom al formulari.
+2. Spring envia una petició GET a `/greeting?name=...`.
+3. El `GreetingController` rep el nom i el passa al `GreetingService`.
+4. El servei afegeix el nom a una llista en memòria.
+5. El controlador envia la llista al `Model`.
+6. Thymeleaf renderitza la vista amb la llista de noms dins d’una taula.
 
 ---
 
-## 📊 Conclusions
+## ✅ Conclusions
 
-* ✔️ S’ha aplicat el patró MVC amb separació clara de responsabilitats
-* ✔️ S’han aplicat anotacions clau: `@Controller`, `@Service`, `@Value`, `@Autowired`, `@RequestParam`
-* ✔️ S’ha demostrat l’ús de formularis i la renderització de dades amb Thymeleaf
-* ✔️ Es pot reutilitzar aquest patró per aplicacions web amb lògica més complexa
+✔️ S’ha aplicat correctament l’estructura MVC típica de Spring Boot.
+✔️ S’ha diferenciat clarament `@Controller` de `@RestController`.
+✔️ S’han usat components essencials com `@Value`, `@Service`, `@Autowired`, `Model`, `@RequestParam`.
+✔️ Es pot estendre aquest projecte fàcilment per afegir persistència (JPA, base de dades) o API externa.
 
-> Aquesta pràctica demostra l’ús complet d’un servidor Spring Boot amb suport per vistes, formularis i dades dinàmiques.
+> Aquesta pràctica mostra com construir una aplicació web Spring completa, amb vistes, formularis i estructura modular pensada per escalar. És la base per a projectes més avançats.
