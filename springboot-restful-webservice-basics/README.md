@@ -499,3 +499,167 @@ Estableix el codi d'estat HTTP de la resposta.
 @ResponseStatus(HttpStatus.CREATED)
 public User createUser(@RequestBody User user) {...}
 ```
+
+## Arquitectura del Servei RESTful
+
+Aquest document explica l'arquitectura en capes utilitzada en el nostre servei RESTful amb Spring Boot.
+
+### Diagrama d'Arquitectura
+
+```mermaid
+graph TD
+    Client[Client: Browser/Postman/curl] -->|HTTP Request| Resource
+
+    subgraph "Aplicació Spring Boot"
+        Resource[Resource Layer<br/>/api/v0/users] -->|Crida| Controller
+        Controller[Controller Layer<br/>Lògica de Control] -->|Crida| Service
+        Service[Service Layer<br/>Lògica de Negoci] -->|Crida| Repository
+        Repository[Repository Layer<br/>Accés a Dades] -->|Gestiona| Data[(Dades)]
+        Model[Model Layer<br/>Entitats] -.->|Utilitzat per| Resource & Controller & Service & Repository
+    end
+```
+
+### Flux de Dades en una Petició
+
+```mermaid
+sequenceDiagram
+    participant C as Client
+    participant R as UserResource
+    participant CT as UserController
+    participant S as UserService
+    participant RP as UserRepository
+    participant D as Data
+    
+    C->>+R: GET /api/v0/users
+    R->>+CT: getAllUsers()
+    CT->>+S: getAllUsers()
+    S->>+RP: findAll()
+    RP->>+D: Consulta dades
+    D-->>-RP: Llista d'usuaris
+    RP-->>-S: Llista d'usuaris
+    S-->>-CT: Llista d'usuaris
+    CT-->>-R: Llista d'usuaris
+    R-->>-C: JSON amb usuaris
+```
+
+### Explicació de les Capes
+
+#### 1. Model (Model Layer)
+
+```mermaid
+classDiagram
+    class User {
+        +long id
+        +String email
+        +String fullName
+        +String password
+    }
+    
+    class Greeting {
+        +long id
+        +String content
+    }
+```
+
+**Responsabilitat**: Definir l'estructura de les dades.
+- Els models són simples contenidors de dades (POJOs o Records)
+- No contenen lògica de negoci
+- Són immutables (en el cas dels records)
+
+#### 2. Repositori (Repository Layer)
+
+```mermaid
+classDiagram
+    class UserRepository {
+        -List~User~ users
+        +List~User~ findAll()
+        +Optional~User~ findById(Long)
+        +User save(User)
+        +boolean deleteById(Long)
+    }
+```
+
+**Responsabilitat**: Accés i manipulació de dades.
+- Proporciona mètodes per a operacions CRUD
+- Abstreu la font de dades (BD, memòria, API externa)
+- En aplicacions reals, normalment utilitza JPA/Hibernate
+
+#### 3. Servei (Service Layer)
+
+```mermaid
+classDiagram
+    class UserService {
+        -UserRepository userRepository
+        +List~User~ getAllUsers()
+        +Optional~User~ getUserById(Long)
+        +User saveUser(User)
+        +boolean deleteUser(Long)
+    }
+```
+
+**Responsabilitat**: Lògica de negoci.
+- Implementa regles de negoci
+- Coordina múltiples repositoris si cal
+- Gestiona transaccions
+- Valida dades segons regles de negoci
+
+#### 4. Controlador (Controller Layer)
+
+```mermaid
+classDiagram
+    class UserController {
+        -UserService userService
+        +List~User~ getAllUsers()
+        +Optional~User~ getUserById(Long)
+        +User saveUser(User)
+        +boolean deleteUserById(Long)
+    }
+```
+
+**Responsabilitat**: Lògica de control.
+- Coordina les operacions de negoci
+- No gestiona directament peticions HTTP (això ho fa el Resource)
+- Pot implementar validacions addicionals
+- Separa la lògica d'aplicació de la interfície REST
+
+#### 5. Recurs REST (Resource Layer)
+
+```mermaid
+classDiagram
+    class UserResource {
+        -UserController userController
+        +List~User~ getAllUsers()
+        +ResponseEntity~User~ getUserById(Long)
+        +User createUser(User)
+        +ResponseEntity~Void~ deleteUser(Long)
+    }
+```
+
+**Responsabilitat**: Interfície REST.
+- Defineix els endpoints de l'API
+- Mapeja peticions HTTP a mètodes
+- Gestiona codis de resposta HTTP
+- Converteix objectes Java a/des de JSON
+
+### Injecció de Dependències
+
+```mermaid
+graph TD
+    A["UserResource (@RestController)"] -->|Autowired| B["UserController (@Controller)"]
+    B -->|Autowired| C["UserService (@Service)"]
+    C -->|Autowired| D["UserRepository (@Repository)"]
+```
+
+Spring Boot utilitza injecció de dependències per:
+- Gestionar automàticament el cicle de vida dels components
+- Reduir l'acoblament entre classes
+- Facilitar les proves unitàries
+- Centralitzar la configuració
+
+### Avantatges de l'Arquitectura en Capes
+
+1. **Separació de preocupacions**: Cada capa té una responsabilitat específica
+2. **Mantenibilitat**: Facilita canvis en una capa sense afectar les altres
+3. **Testabilitat**: Permet provar cada capa de forma aïllada
+4. **Escalabilitat**: Facilita el creixement del sistema
+5. **Reutilització**: Components com serveis i repositoris poden ser reutilitzats
