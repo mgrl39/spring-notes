@@ -272,3 +272,5 @@ Un POJO és una classe senzilla de Java amb atributs i mètodes getters/setters.
 * ✔️ S’ha completat tota la pràctica, incloent les tasques extres.
 * ✔️ S’ha seguit una estructura clara i modular.
 * ✔️ Tots els conceptes s’han explicat detalladament per a que qualsevol persona, encara que no conegui Spring Boot, pugui entendre què fa cada part del projecte.
+
+[Tornar al menu]()

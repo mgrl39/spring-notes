@@ -19,7 +19,7 @@ Aquest repositori està pensat per a estudiants, desenvolupadors i qualsevol per
 
 ### **Spring Boot 2025**
 
-#### **[SESSIÓ 1. Introducció](/introduccio)**
+#### **[SESSIÓ 1. Introducció](introduccio)**
 
 - Què és Spring i què podem fer?
     - Introducció al framework Spring
@@ -30,7 +30,7 @@ Aquest repositori està pensat per a estudiants, desenvolupadors i qualsevol per
     - Afegir un `index.html` per a un missatge de benvinguda
     - Crear un formulari per enviar dades a un endpoint
 
-#### **[SESSIÓ 2. RestController Vs Controller](/springboot-restcontroller-vs-controller)**
+#### **[SESSIÓ 2. RestController Vs Controller](springboot-restcontroller-vs-controller)**
 
 - Comparació entre `@RestController` i `@Controller`
 - Exemples amb Thymeleaf i manipulació de dades

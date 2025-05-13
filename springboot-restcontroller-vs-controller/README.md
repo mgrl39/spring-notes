@@ -265,4 +265,4 @@ Aquest enfocament modular i clar és el que ens permet mantenir aplicacions robu
 
 > Aquesta pràctica mostra com construir una aplicació web Spring completa, amb vistes, formularis i estructura modular pensada per escalar. És la base per a projectes més avançats.
 
-[Tornar al menu](/)
+[Tornar al menu]()

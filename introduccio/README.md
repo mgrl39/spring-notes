@@ -21,4 +21,4 @@
 
 ![metodes](metodes.png)
 
-[Començar la primera sessió](/springboot-crud-intro)
+[Començar la primera sessió](springboot-crud-intro)
