@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ca">
+<th:block th:replace="~{fragments/head :: head('Usuari Aleatori')}"/>
+<body class="bg-dark text-light d-flex flex-column min-vh-100">
+
+<!-- Navbar -->
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<!-- Contingut centrat verticalment -->
+<main class="flex-fill d-flex align-items-center justify-content-center">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
+                <div class="card bg-secondary text-white shadow-lg">
+                    <div class="card-body text-center">
+                        <img th:src="${user.picture.large}" class="rounded-circle mb-3 border border-white" width="150" alt="Foto usuari" />
+                        <h3 th:text="${user.name.fullTitle}"></h3>
+                        <p><strong>Email:</strong> <span th:text="${user.email}"></span></p>
+                        <p><strong>Telèfon:</strong> <span th:text="${user.phone}"></span></p>
+                        <p><strong>Mòbil:</strong> <span th:text="${user.cell}"></span></p>
+                        <p><strong>Ubicació:</strong>
+                            <span th:text="${user.location.city} + ', ' + ${user.location.state} + ', ' + ${user.location.country}"></span>
+                        </p>
+                        <p><strong>Codi Postal:</strong> <span th:text="${user.location.postcode}"></span></p>
+                        <p><strong>Coordenades:</strong>
+                            <span th:text="'Lat: ' + ${user.location.coordinates.latitude} + ', Lon: ' + ${user.location.coordinates.longitude}"></span>
+                        </p>
+                        <p><strong>Zona horària:</strong>
+                            <span th:text="${user.location.timezone.description} + ' (GMT' + ${user.location.timezone.offset} + ')'"></span>
+                        </p>
+                        <a href="/user" class="btn btn-outline-light mt-3">🔁 Generar un altre usuari</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<!-- Footer -->
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+<script th:src="@{/webjars/bootstrap/5.1.3/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>
