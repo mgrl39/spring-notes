@@ -27,12 +27,15 @@ public class GreetingController {
     @Autowired
     GreetingService service;
 
+    // http://localhost:8080/greeting?name=asdad&name=xd&name=pepe&name=test
     //@GetMapping("/greeting")
     // Canviar la String name per un List<String> i adaptar l’html amb el Thymeleaf per
     // poder veure a la mateixa plana tots els texts entrats i desats a l’array
     @GetMapping
     public String greeting(@RequestParam(name="name", required=false, defaultValue="World")String name, Model model) {
         //model.addAttribute("name", name);
+        //model.addAttribute("wel", wel);
+        System.out.println(wel);
         service.addWord(name);
         model.addAttribute("msgs", service.getAllMessages());
         return "greeting";
